@@ -7,14 +7,14 @@ export default {
                     image: null,
                     doc: null,
                     caption: null,
-                    time: 'April 05, 2023 14:06:00'
+                    time: 'April 10, 2023 10:50:00'
                 },
                 {
                     text: `День первый - куратор @SagaNuren\n\nСегодняшние темы:\n<b>Биржа? Виды бирж, как торговать на бирже.\nЦенообразование на бирже.\nСловарь трейдера (методичка).</b>\n\n<a href="https://youtu.be/742026e-ngk">https://youtu.be/742026e-ngk</a>\n\nДля регистрации на бирже Binance используйте ссылку - <a href="https://bit.ly/3PFOgkS">https://bit.ly/3PFOgkS</a>`,
                     image: null,
                     doc: null,
                     caption: null,
-                    time: 'April 05, 2023 14:11:00'
+                    time: 'April 10, 2023 10:51:00'
                 },
                 {
                     text: `Тема - <b>Ценообразование на бирже.</b>\n\n<a href=" https://youtu.be/ytpScVKJCtY">https://youtu.be/ytpScVKJCtY</a>`,

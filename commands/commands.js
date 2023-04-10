@@ -16,7 +16,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 export const start = async (ctx) => {
     try {
         const name = ctx.message.from.first_name ? ctx.message.from.first_name : '';
-        ctx.reply(`Привет, ${name}. Чтобы взаимодействовать с ботом мини-курса, используй следующие команды: \n ${commands}`);
+        ctx.replyWithHTML(`Привет, ${name}. Чтобы взаимодействовать с ботом мини-курса, используй следующие команды: \n ${commands}`);
     } catch (err) {
         console.log(err);
     }
