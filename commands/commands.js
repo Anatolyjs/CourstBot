@@ -108,7 +108,7 @@ export const deleteAll = async (ctx) => {
     } catch (err) {
         console.log('opppps')
     }
-}
+};
 
 export const rating = async (ctx) => {
     try {
@@ -129,7 +129,7 @@ export const rating = async (ctx) => {
     } catch (err) {
         console.log('ops');
     }
-}
+};
 
 export const getUsersCount = async (ctx) => {
     try {
@@ -138,13 +138,14 @@ export const getUsersCount = async (ctx) => {
         }
 
         const users = await UserModel.find();
+        const usersCompletedTests = users.filter((user) => user.completedTest === config.sendedData);
 
-        await ctx.reply(`Всего зарегистрировалось пользователей: ${users.length}`);
+        await ctx.reply(`Всего зарегистрировалось пользователей: ${users.length}. Выполнили все текущие тесты: ${usersCompletedTests.length}`);
     } catch (err) {
         console.log(err);
     }
-}
+};
 
 export const help = async (ctx) => {
     ctx.replyWithHTML(helpCommand)
-}
+};
