@@ -13,27 +13,26 @@ dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-const sendData = async (to, photo, info, doc, caption) => {
+const sendData = async (to, photo, info, preview, caption) => {
     if (photo) {
         try {
-            const image = await bot.telegram.sendPhoto(to, { source: photo });
+            await bot.telegram.sendPhoto(to, { source: photo }, {
+                caption: caption,
+                parse_mode: 'HTML'
+            });
+            return;
         } catch (err) {
             console.log(err);
+            return
         }
     }
     if (info) {
         try {
-            const text = await bot.telegram.sendMessage(to, info, { parse_mode: 'HTML' });
-        } catch (err) {
-            console.log(err);
-        }
-    }
-    if (doc) {
-        try {
-            const document = await bot.telegram.sendDocument(to, { source: doc }, {
-                caption: caption,
-                parse_mode: 'HTML'
-            });
+            if (preview) {
+                await bot.telegram.sendMessage(to, info, { parse_mode: 'HTML', disable_web_page_preview: preview });
+            } else {
+                await bot.telegram.sendMessage(to, info, { parse_mode: 'HTML'});
+            }
         } catch (err) {
             console.log(err);
         }
@@ -58,7 +57,7 @@ export const sendMaterial = async () => {
                                 if (users.users[i].completedTest === users.users[i].receivedData) {
                                     console.log('sending data to', users.users[i].id)
                                     setTimeout(async () => {
-                                        await sendData(users.users[i].id, lessonItem.image, lessonItem.text, lessonItem.doc, lessonItem.caption);
+                                        await sendData(users.users[i].id, lessonItem.image, lessonItem.text, lessonItem.preview, lessonItem.caption);
                                         if (indexItem === lesson.info.length - 1) {
                                             await UserModel.findOneAndUpdate({ id: users.users[i].id }, { $inc: { receivedData: 1 } }, { returnDocument: 'after' });
                                             setUsers();
@@ -66,7 +65,7 @@ export const sendMaterial = async () => {
                                     }, 100 * i);
                                 }
                             }
-                            if (indexItem === lesson.info.length - 1) {
+                            if (indexItem === 0) {
                                 await ConfigModel.findOneAndUpdate({ id: 1 }, { $inc: { sendedData: 1 } });
                                 setUsers();
                             }
@@ -86,7 +85,7 @@ export const sendMaterial = async () => {
                             if (users.users[i].completedTest === users.users[i].receivedData) {
                                 console.log('sending data to', users.users[i].id)
                                 setTimeout(async () => {
-                                    await sendData(users.users[i].id, lesson.image, lesson.text, lesson.doc, lesson.caption);
+                                    await sendData(users.users[i].id, lesson.image, lesson.text, lesson.preview, lesson.caption);
                                     await UserModel.findOneAndUpdate({ id: users.users[i].id }, { $inc: { receivedData: 1 } }, { returnDocument: 'after' });
                                     setUsers();
 
@@ -136,13 +135,28 @@ export const sendQuestion = async (user) => {
             if ((user.completedTest < config.sendedData) && user.receivedData < config.sendedData) {
                 await bot.telegram.sendMessage(userId, 'Через несколько секунд вы получите новое задание.');
 
+                const lesson = lessons.lessons[user.completedTest];
 
-                const { image, text } = lessons.lessons[user.completedTest];
-
-                setTimeout(async () => {
-                    await sendData(userId, image, text);
-                    await UserModel.findOneAndUpdate({ id: userId }, { $inc: { receivedData: 1 } });
-                }, 2000);
+                if (lesson.info) {
+                    lesson.info.forEach(async (lessonItem, index) => {
+                        const { image, text, preview, caption } = lessonItem;
+                        const dateNow = new Date();
+                        const lessonDate = new Date(lessonItem.time)
+                        if (lessonDate > dateNow) {
+                            return;
+                        }
+                        await sendData(userId, image, text, preview, caption);
+                        if (index === (lesson.info.length - 1)) {
+                             await UserModel.findOneAndUpdate({ id: userId }, { $inc: { receivedData: 1 } });
+                        }
+                    })
+                } else {
+                    const { image, text } = lesson;
+                    setTimeout(async () => {
+                        await sendData(userId, image, text);
+                        await UserModel.findOneAndUpdate({ id: userId }, { $inc: { receivedData: 1 } });
+                    }, 2000);
+                }
             }
 
             await UserModel.findOneAndUpdate({
@@ -165,10 +179,13 @@ export const sendQuestion = async (user) => {
             return [Markup.button.callback(option.text, option.value)]
         });
 
-        await bot.telegram.sendMessage(userId, currentQuestion.question);
-
         if (currentQuestion.image) {
-            await bot.telegram.sendPhoto(userId, { source: currentQuestion.image });
+            await bot.telegram.sendPhoto(userId, { source: currentQuestion.image}, {
+                caption: currentQuestion.question,
+                parse_mode: 'HTML'
+            });
+        } else {
+            await bot.telegram.sendMessage(userId, currentQuestion.question);
         }
 
         let buttons = await bot.telegram.sendMessage(userId, 'Варианты ответов: ', Markup.inlineKeyboard(

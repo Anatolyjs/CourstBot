@@ -39,7 +39,7 @@ export const register = async (ctx) => {
         try {
             user_channel_status = await bot.telegram.getChatMember(config.channel, userId);
         } catch (err) {
-            console.log('user not found');
+            console.log('user not found', err);
         }
 
         const isUserRegistered = users.users.find((user) => user.id === userId);
@@ -48,7 +48,7 @@ export const register = async (ctx) => {
             return ctx.reply('Вы уже зарегистрированы');
         }
 
-        if (!user_channel_status.status) {
+        if (!user_channel_status?.status) {
             return ctx.reply('Вы не подписаны на канал https://t.me/trade_soul, пожалуйста, подпишитесь для дальнейшей регистрации!');
         }
 

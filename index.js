@@ -44,7 +44,6 @@ const addActions = () => {
 
                         const userId = ctx.update.callback_query.from.id;
                         let user = users.users.find((user) => user.id === userId);
-
                         if (answer.value === tests[user.completedTest].questions[user.qurrentQuestionIndex].rightAnswer) {
                             user.score++;
                             user.tests[user.completedTest].rightAnswers.push(user.qurrentQuestionIndex + 1);
@@ -65,7 +64,11 @@ const addActions = () => {
                             user.tests[user.completedTest].wrongAnswers.push(user.qurrentQuestionIndex + 1);
                         }
 
-                        bot.telegram.deleteMessage(user.messageToDelete.chatId, user.messageToDelete.messageId);
+                        try {
+                            await bot.telegram.deleteMessage(user.messageToDelete.chatId, user.messageToDelete.messageId);
+                        } catch (err) {
+                            console.log('не получилось удалить сообщение')
+                        }
 
                         user = await UserModel.findOneAndUpdate(
                             {
@@ -98,5 +101,14 @@ await setUsers();
 await setConfig();
 
 
+// const restartAllUsers = async () => {
+//     console.log()
+//     for( let i = 0; i < users.users.length; i++) {
+//         const userId = users.users[i].id;
+//         console.log('updateing user', userId);
+//         await UserModel.findOneAndUpdate({id: userId}, {$set: {receivedData: 0, qurrentQuestionIndex: 0, score: 0, completedTest: 0}});
+//     }
+// }
+// setTimeout(restartAllUsers, 5000);
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
