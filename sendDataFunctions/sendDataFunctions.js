@@ -74,10 +74,7 @@ export const sendMaterial = async () => {
                                                     setUsers();
                                                 }
                                             }
-                                            const result = checkingSendMessage(users.users[i].chatId, users.users[i].id, sendInfo);
-                                            if(!result) {
-                                                console.log(`Не удалось отправить материао пользователю ${users.users[i].username}`);
-                                            }
+                                            checkingSendMessage(users.users[i].chatId, users.users[i].id, sendInfo);
 
                                         } catch (err) {
                                             console.log(err);
