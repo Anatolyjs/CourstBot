@@ -11,29 +11,6 @@ import UserModel from './models/UserModel.js';
 import { createConfig } from './controllers/ConfigController.js';
 
 dotenv.config();
-
-mongoose
-    .connect(`mongodb+srv://${process.env.BD_TOKEN}.mongodb.net/Course?retryWrites=true&w=majority`)
-    .then(() => console.log('DB okey'))
-    .catch((err) => console.log('DB error', err))
-
-
-const bot = new Telegraf(process.env.BOT_TOKEN);
-
-bot.start(commandsFun.start);
-bot.help(commandsFun.help);
-
-bot.command('register', commandsFun.register);
-bot.command('test', commandsFun.test);
-bot.command('rating', commandsFun.rating);
-bot.command('getUsers', commandsFun.getUsersCount);
-bot.command('deleteAll', commandsFun.deleteAll);
-
-let errorsCount = 0;
-bot.launch();
-
-dataFunctions.sendMaterial();
-
 const addActions = () => {
     tests.forEach((test) => {
         test.questions.forEach((question, index) => {
@@ -43,7 +20,8 @@ const addActions = () => {
                         await ctx.reply(`Вы выбрали ${answer.text}`);
 
                         const userId = ctx.update.callback_query.from.id;
-                        let user = users.users.find((user) => user.id === userId);
+                        let user = await users.users.find((user) => user.id === userId);
+                        console.log(`index in answer ${user.qurrentQuestionIndex}`);
                         if (answer.value === tests[user.completedTest].questions[user.qurrentQuestionIndex].rightAnswer) {
                             user.score++;
                             user.tests[user.completedTest].rightAnswers.push(user.qurrentQuestionIndex + 1);
@@ -64,11 +42,17 @@ const addActions = () => {
                             user.tests[user.completedTest].wrongAnswers.push(user.qurrentQuestionIndex + 1);
                         }
 
-                        try {
-                            await bot.telegram.deleteMessage(user.messageToDelete.chatId, user.messageToDelete.messageId);
-                        } catch (err) {
-                            console.log('не получилось удалить сообщение')
+                        const deleteMessage = async () => {
+                            try {
+                                let tempUser =  await UserModel.findOne({id: user.id});
+                                
+                                console.log(`Messages to delete for user ${userId} ${tempUser.messageToDelete.chatId}, ${tempUser.messageToDelete.messageId}`);
+                                await bot.telegram.deleteMessage(tempUser.messageToDelete.chatId, tempUser.messageToDelete.messageId);
+                            } catch (err) {
+                                console.log('не получилось удалить сообщение')
+                            }
                         }
+                        deleteMessage();
 
                         user = await UserModel.findOneAndUpdate(
                             {
@@ -81,7 +65,6 @@ const addActions = () => {
                             {
                                 returnDocument: 'after'
                             });
-
                         dataFunctions.sendQuestion(user);
                         setUsers();
                     } catch (err) {
@@ -93,20 +76,40 @@ const addActions = () => {
     })
 }
 
+mongoose
+    .connect(`mongodb+srv://${process.env.BD_TOKEN}.mongodb.net/Course?retryWrites=true&w=majority`)
+    .then(async () =>  {
+        console.log('DB okey');
+        addActions();
+        await setUsers();
+        await setConfig();
+    })
+    .catch((err) => console.log('DB error', err))
 
-addActions();
+
+const bot = new Telegraf(process.env.BOT_TOKEN);
+
+bot.start(commandsFun.start);
+bot.help(commandsFun.help);
+
+bot.command('register', commandsFun.register);
+bot.command('test', commandsFun.test);
+bot.command('rating', commandsFun.rating);
+bot.command('getUsers', commandsFun.getUsersCount);
+bot.command('deleteAll', commandsFun.deleteAll);
+
+let errorsCount = 0;
+bot.launch();
+
+dataFunctions.sendMaterial();
 
 await createConfig();
-await setUsers();
-await setConfig();
-
 
 // const restartAllUsers = async () => {
-//     console.log()
 //     for( let i = 0; i < users.users.length; i++) {
 //         const userId = users.users[i].id;
 //         console.log('updateing user', userId);
-//         await UserModel.findOneAndUpdate({id: userId}, {$set: {receivedData: 0, qurrentQuestionIndex: 0, score: 0, completedTest: 0}});
+//         await UserModel.findOneAndUpdate({id: userId}, {$set: {receivedData: 0, completedTest: 0, score: 0, qurrentQuestionIndex: 0}});
 //     }
 // }
 // setTimeout(restartAllUsers, 5000);

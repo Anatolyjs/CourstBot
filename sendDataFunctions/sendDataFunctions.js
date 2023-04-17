@@ -71,10 +71,10 @@ export const sendMaterial = async () => {
                                                 await sendData(users.users[i].id, lessonItem.image, lessonItem.text, lessonItem.preview, lessonItem.caption);
                                                 if (indexItem === lesson.info.length - 1) {
                                                     await UserModel.findOneAndUpdate({ id: users.users[i].id }, { $inc: { receivedData: 1 } }, { returnDocument: 'after' });
-                                                    setUsers();
+                                                    await setUsers();
                                                 }
                                             }
-                                            checkingSendMessage(users.users[i].chatId, users.users[i].id, sendInfo);
+                                            await checkingSendMessage(users.users[i].chatId, users.users[i].id, sendInfo);
 
                                         } catch (err) {
                                             console.log(err);
@@ -128,11 +128,14 @@ export const sendQuestion = async (user) => {
     try {
         const testNumber = user.completedTest;
 
+        console.log(`index in question ${user.qurrentQuestionIndex}`);
         const { id } = user;
         const userId = id;
 
+        if (user.completedTest === user.receivedData) {
+            return;
+        }
         if (user.qurrentQuestionIndex >= tests[testNumber].questions.length) {
-
             const message = `Данные по вашим ответам получены: \n ${user.tests[testNumber].wrongAnswers.length ?
                 `Неверные ответы: ${user.tests[testNumber].wrongAnswers}` :
                 'Ты молодец! Все ответы верные'}`;
@@ -169,20 +172,15 @@ export const sendQuestion = async (user) => {
                              await UserModel.findOneAndUpdate({ id: userId }, { $inc: { receivedData: 1 } });
                         }
                     })
-                } else {
-                    const { image, text } = lesson;
-                    setTimeout(async () => {
-                        await sendData(userId, image, text);
-                        await UserModel.findOneAndUpdate({ id: userId }, { $inc: { receivedData: 1 } });
-                    }, 2000);
                 }
             }
 
-            await UserModel.findOneAndUpdate({
-                id: userId
-            },
+            await UserModel.findOneAndUpdate(
+                { 
+                    id: userId 
+                },
                 {
-                    qurrentQuestionIndex: 0
+                    $set: { qurrentQuestionIndex: 0 }
                 },
                 {
                     returnDocument: 'after'
@@ -190,7 +188,6 @@ export const sendQuestion = async (user) => {
             setUsers();
             return;
         }
-
 
         const currentQuestion = tests[testNumber].questions[user.qurrentQuestionIndex];
 
@@ -216,16 +213,22 @@ export const sendQuestion = async (user) => {
         user.messageToDelete.chatId = buttons.chat.id;
         user.messageToDelete.messageId = buttons.message_id;
 
-        await UserModel.findOneAndUpdate({
-            id: userId
-        },
+        try {
+            const tempUser =  await UserModel.findOneAndUpdate({
+                id: userId
+            },
             {
-                $set: { messageToDelete: { chatId: buttons.chat.id, messageId: buttons.message_id } }
+                $set: { messageToDelete: { chatId: user.messageToDelete.chatId, messageId: user.messageToDelete.messageId } }
             },
             {
                 returnDocument: 'after'
-            })
+            });
 
+            console.log(`Messages for user ${userId} ${tempUser.messageToDelete.chatId}, ${tempUser.messageToDelete.messageId}`);
+
+        } catch (err) {
+            console.log('Не получилось обновить пользователя в базе данных');
+        }
         setUsers();
     } catch (err) {
         console.log(err);

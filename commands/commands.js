@@ -126,7 +126,11 @@ export const test = async (ctx) => {
         await ctx.reply('Вы выполнили все актуальные тесты');
     }
 
-    if (registeredUser.completedTest === registeredUser.receivedData) {
+    if (registeredUser.completedTest >= registeredUser.receivedData) {
+        if (registeredUser.qurrentQuestionIndex !== 0) {
+            await UserModel.findOneAndUpdate({id: registeredUser.id}, {$set: {qurrentQuestionIndex: 0}});
+            setUsers();
+        }
         checkingSendMessage(ctx, allTestsCompleted);
         return; 
     }
@@ -138,7 +142,11 @@ export const test = async (ctx) => {
             console.log(err);
         }
     }
-    dataFunctions.sendQuestion(registeredUser);
+    if (registeredUser.completedTest < registeredUser.receivedData) {
+        dataFunctions.sendQuestion(registeredUser);
+    } else {
+        checkingSendMessage(ctx, allTestsCompleted);
+    }
 };
 
 export const deleteAll = async (ctx) => {
