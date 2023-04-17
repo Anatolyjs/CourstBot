@@ -13,6 +13,15 @@ dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
+const checkingSendMessage = async (chatId, userId, callback) => {
+    const member = await bot.telegram.getChatMember(chatId, userId);
+    if (member.status === 'member' || member.status === 'administrator' || member.status === 'creator') {
+        callback();
+        return 1;
+    }
+    return 0;
+}  
+
 const sendData = async (to, photo, info, preview, caption) => {
     if (photo) {
         try {
@@ -52,16 +61,28 @@ export const sendMaterial = async () => {
                             return;
                         }
 
-                        console.log(1);
                         setTimeout(async () => {
                             for (let i = 0; i < users.users.length; i++) {
                                 if (users.users[i].completedTest === users.users[i].receivedData) {
                                     console.log('sending data to', users.users[i].id)
                                     setTimeout(async () => {
-                                        await sendData(users.users[i].id, lessonItem.image, lessonItem.text, lessonItem.preview, lessonItem.caption);
-                                        if (indexItem === lesson.info.length - 1) {
-                                            await UserModel.findOneAndUpdate({ id: users.users[i].id }, { $inc: { receivedData: 1 } }, { returnDocument: 'after' });
-                                            setUsers();
+                                        try {
+                                            const sendInfo = async () => {
+                                                await sendData(users.users[i].id, lessonItem.image, lessonItem.text, lessonItem.preview, lessonItem.caption);
+                                                if (indexItem === lesson.info.length - 1) {
+                                                    await UserModel.findOneAndUpdate({ id: users.users[i].id }, { $inc: { receivedData: 1 } }, { returnDocument: 'after' });
+                                                    setUsers();
+                                                }
+                                            }
+                                            const result = checkingSendMessage(users.users[i].chatId, users.users[i].id, sendInfo);
+                                            if(!result) {
+                                                console.log(`Не удалось отправить материао пользователю ${users.users[i].username}`);
+                                            }
+
+                                        } catch (err) {
+                                            console.log(err);
+                                            errorsCount++;
+                                            console.log(errorsCount);
                                         }
                                     }, 100 * i);
                                 }

@@ -13,12 +13,32 @@ dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
+const checkingSendMessage = async (ctx, callback) => {
+    const userId =  ctx.message.from.id
+    const chatId =  ctx.message.chat.id;
+    const member = await bot.telegram.getChatMember(chatId, userId);
+    if (member.status === 'member' || member.status === 'administrator' || member.status === 'creator') {
+        callback();
+        return 1;
+    }
+    return 0;
+}
+
 export const start = async (ctx) => {
     try {
         const name = ctx.message.from.first_name ? ctx.message.from.first_name : '';
-        ctx.replyWithHTML(`Привет, ${name}. Чтобы взаимодействовать с ботом мини-курса, используй следующие команды: \n ${commands}`);
+        
+        const reply = async () => {
+            await ctx.replyWithHTML(`Привет, ${name}. Чтобы взаимодействовать с ботом мини-курса, используй следующие команды: \n ${commands}`);
+        }
+
+        const result = checkingSendMessage(ctx, reply);
+        if (!result) {
+            console.log('Не удалось отправить сообщение о начале')
+        }
+        
     } catch (err) {
-        console.log(err);
+        console.log(1);
     }
 };
 
@@ -29,8 +49,13 @@ export const register = async (ctx) => {
 
         const name = ctx.message.from.first_name ? ctx.message.from.first_name : 'друг';
 
+        const replyRegister = async () => {
+            await ctx.reply(`К сожалению, ${name}. Регистрация на мини-курс от команды Trade Soul уже закрыта!`);
+        }
+
         if ((deadline - currentDate) < 0) {
-            return ctx.reply(`К сожалению, ${name}. Регистрация на мини-курс от команды Trade Soul уже закрыта!`);
+            checkingSendMessage(ctx, replyRegister);
+            return;
         }
 
         const userId = ctx.message.from.id;
@@ -44,29 +69,48 @@ export const register = async (ctx) => {
 
         const isUserRegistered = users.users.find((user) => user.id === userId);
 
+        const replyRegisterAlready = async () => {
+            await ctx.reply('Вы уже зарегистрированы');
+        }
+
         if (isUserRegistered) {
-            return ctx.reply('Вы уже зарегистрированы');
+            checkingSendMessage(ctx, replyRegisterAlready);
+            return 
+        }
+
+        const replyFollowToRegister = async () => {
+            ctx.reply('Вы не подписаны на канал https://t.me/trade_soul, пожалуйста, подпишитесь для дальнейшей регистрации!');
         }
 
         if (!user_channel_status?.status) {
-            return ctx.reply('Вы не подписаны на канал https://t.me/trade_soul, пожалуйста, подпишитесь для дальнейшей регистрации!');
+            checkingSendMessage(ctx, replyFollowToRegister);
+            return;
         }
 
         if (user_channel_status.status === 'left') {
-            return ctx.reply('Вы не подписаны на канал https://t.me/trade_soul, пожалуйста, подпишитесь для дальнейшей регистрации!');
+            checkingSendMessage(ctx, replyFollowToRegister);
+            return;
         }
 
-        await createUserBot(ctx);
+        try {
+            await createUserBot(ctx);
+        } catch (err) {
+            console.log(err);
+        }
 
-        const photo1 = { type: 'photo', media: { source: './utils/image/preview1.jpg' } };
-        const photo2 = { type: 'photo', media: { source: './utils/image/preview2.jpg', caption: registerMessage,
-        parse_mode: 'HTML',
-        disable_web_page_preview: true} };
-        const mediaGroup = [photo1, photo2];
+        const sendRegisterMessage = async () => {
+            const photo1 = { type: 'photo', media: { source: './utils/image/preview1.jpg' } };
+            const photo2 = { type: 'photo', media: { source: './utils/image/preview2.jpg', caption: registerMessage,
+            parse_mode: 'HTML',
+            disable_web_page_preview: true} };
+            const mediaGroup = [photo1, photo2];
 
-        await ctx.replyWithMediaGroup(mediaGroup);
-        await ctx.replyWithHTML(registerMessage, {disable_web_page_preview: true})
-        await setUsers();
+            await ctx.replyWithMediaGroup(mediaGroup);
+            await ctx.replyWithHTML(registerMessage, {disable_web_page_preview: true});
+            await setUsers();
+        }
+
+        checkingSendMessage(ctx, sendRegisterMessage);
     } catch (err) {
         console.log(err);
     }
@@ -78,8 +122,13 @@ export const test = async (ctx) => {
         return;
     }
 
+    const allTestsCompleted = async () => {
+        await ctx.reply('Вы выполнили все актуальные тесты');
+    }
+
     if (registeredUser.completedTest === registeredUser.receivedData) {
-        return ctx.reply('Вы выполнили все актуальные тесты');
+        checkingSendMessage(ctx, allTestsCompleted);
+        return; 
     }
 
     if (registeredUser.messageToDelete.chatId && registeredUser.messageToDelete.messageId) {
@@ -147,5 +196,8 @@ export const getUsersCount = async (ctx) => {
 };
 
 export const help = async (ctx) => {
-    ctx.replyWithHTML(helpCommand)
+    const replyHelp = async () => {
+        await ctx.replyWithHTML(helpCommand);
+    }
+    checkingSendMessage(ctx, replyHelp);
 };

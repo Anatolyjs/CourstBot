@@ -29,7 +29,7 @@ bot.command('rating', commandsFun.rating);
 bot.command('getUsers', commandsFun.getUsersCount);
 bot.command('deleteAll', commandsFun.deleteAll);
 
-
+let errorsCount = 0;
 bot.launch();
 
 dataFunctions.sendMaterial();

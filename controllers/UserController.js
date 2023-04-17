@@ -3,6 +3,9 @@ import UserModel from "../models/UserModel.js";
 
 export const createUserBot = async (ctx) => {
     try {
+        if (!ctx.message.from.username) {
+            return
+        }
         const doc = new UserModel({
             id: ctx.message.from.id,
             username: ctx.message.from.username,
