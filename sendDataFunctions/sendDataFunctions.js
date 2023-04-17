@@ -52,6 +52,7 @@ export const sendMaterial = async () => {
                             return;
                         }
 
+                        console.log(1);
                         setTimeout(async () => {
                             for (let i = 0; i < users.users.length; i++) {
                                 if (users.users[i].completedTest === users.users[i].receivedData) {
