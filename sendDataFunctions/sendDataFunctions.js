@@ -13,7 +13,7 @@ dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-const checkingSendMessage = async (chatId, userId, callback) => {
+export const checkingSendMessage = async (chatId, userId, callback) => {
     const member = await bot.telegram.getChatMember(chatId, userId);
     if (member.status === 'member' || member.status === 'administrator' || member.status === 'creator') {
         callback();

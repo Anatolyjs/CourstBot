@@ -11,6 +11,7 @@ import { setConfig, setUsers } from './setDataFromBD/setDataFromBD.js';
 import UserModel from './models/UserModel.js';
 import { createConfig } from './controllers/ConfigController.js';
 
+
 dotenv.config();
 const addActions = () => {
     tests.forEach((test) => {
@@ -76,7 +77,7 @@ mongoose
         await setConfig();
         setUsers().then(() => {
             addActions();
-            console.log('users setted')
+            console.log('users setted');
         }).catch((err) => {
             console.log(err)
         })
@@ -100,6 +101,82 @@ bot.launch();
 
 dataFunctions.sendMaterial();
 
+
+const newTests = [
+    {
+        id: 1,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 2,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 3,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 4,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 5,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 6,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 7,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 8,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 9,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 10,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 11,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    },
+    {
+        id: 12,
+        rightAnswers: [],
+        wrongAnswers: [],
+        answers: []
+    }
+]
+
 // const restartAllUsers = async () => {
 //     for( let i = 0; i < users.users.length; i++) {
 //         const userId = users.users[i].id;
@@ -110,7 +187,7 @@ dataFunctions.sendMaterial();
 // await UserModel.updateMany({}, {$set: {tests: testsToBd}});
 // setTimeout(restartAllUsers, 5000);
 
-// await UserModel.updateMany({}, {$set: {receivedData: 1, completedTest: 1, score: 0}});
+// await UserModel.updateMany({}, {$set: {receivedData: 1, completedTest: 1, score: 0, tests: newTests}});
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

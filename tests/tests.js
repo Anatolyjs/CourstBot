@@ -173,6 +173,10 @@ export default [
                     {
                         text: 'Ответ C',
                         value: 'C12'
+                    },
+                    {
+                        text: 'Ответ D',
+                        value: 'D12'
                     }],
                 rightAnswer: 'A12'
             },
