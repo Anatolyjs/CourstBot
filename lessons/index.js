@@ -43,14 +43,14 @@ export default {
                     image: null,
                     preview: true,
                     caption: null,
-                    time: 'April 18, 2023 13:00:00'
+                    time: 'April 18, 2023 12:00:00'
                 },
                 {
                     text: `🗣🧠 Тема - <b>Виды рынков</b>\n\nhttps://youtu.be/tXelB78flI4\n\n🔹 Регистрация на бирже Binance - https://bit.ly/3PFOgkS\n\n🔹 https://coinmarketcap.com - сервис для отслеживания динамики криптовалют, а также основной источник данных о рынке цифровых активов и биржах криптовалют.\n\n<b>▶️ Для прохождения тестирования и перехода на новую тему нажмите</b> /test\n\n_______________________________________`,
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 18, 2023 13:15:00'
+                    time: 'April 18, 2023 12:15:00'
                 }
             ]
         },
@@ -61,7 +61,7 @@ export default {
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 19, 2023 13:00:00'
+                    time: 'April 19, 2023 12:00:00'
                 }
             ]
         },
@@ -72,7 +72,7 @@ export default {
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 20, 2023 13:00:00'
+                    time: 'April 20, 2023 12:00:00'
                 }
             ]
         },
@@ -83,7 +83,7 @@ export default {
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 21, 2023 13:00:00'
+                    time: 'April 21, 2023 12:00:00'
                 }
             ]
         },
@@ -94,7 +94,7 @@ export default {
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 22, 2023 13:00:00'
+                    time: 'April 22, 2023 12:00:00'
                 }
             ]
         },
@@ -105,7 +105,7 @@ export default {
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 23, 2023 13:00:00'
+                    time: 'April 23, 2023 12:00:00'
                 }
             ]
         },
@@ -116,7 +116,7 @@ export default {
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 24, 2023 13:00:00'
+                    time: 'April 24, 2023 12:00:00'
                 }
             ]
         },
@@ -127,7 +127,7 @@ export default {
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 25, 2023 13:00:00'
+                    time: 'April 25, 2023 12:00:00'
                 }
             ]
         },
@@ -138,7 +138,7 @@ export default {
                     image: null,
                     preview: null,
                     caption: null,
-                    time: 'April 26, 2023 13:00:00'
+                    time: 'April 26, 2023 12:00:00'
                 }
             ]
         }

@@ -24,33 +24,29 @@ const addActions = () => {
                         let user = users.users.find((user) => user.id === userId);
                         if (user.completedTest === (+answer.value[1] + 1)) {
                             return;
-                        }
+                        }//
 
-                        const isExist = user.answers.find((answerValue) => {
+                        const isExist = user.tests[user.completedTest].answers.find((answerValue) => {
                             if (answer.value.match(/\d+$/).toString() === answerValue.match(/\d+$/).toString()) {
                                 return 1
                             } else {
                                 return 0;
                             }
                         });
+                        
                         // return arrayAnswers.find((val) => val.match(/\d+$/).toString() == currentAnsw.match(/\d+$/).toString());
                         if (isExist) {
                             return
                         }
-                        console.log(user.answers);
-
-                        console.log(`index in answer ${user.qurrentQuestionIndex}`);
 
                         await ctx.replyWithHTML(`<b>Вы выбрали ${answer.text}</b>`);
-                        user.answers.push(answer.value);
-                        console.log(user.qurrentQuestionIndex);
+                        user.tests[user.completedTest].answers.push(answer.value);
                         if (answer.value === tests[user.completedTest].questions[user.qurrentQuestionIndex].rightAnswer) {
                             user.score++;
                             user.tests[user.completedTest].rightAnswers.push(user.qurrentQuestionIndex + 1);
                         } else {
                             user.tests[user.completedTest].wrongAnswers.push(user.qurrentQuestionIndex + 1);
                         }
-                        console.log(user.qurrentQuestionIndex)
 
                         user.qurrentQuestionIndex++;
                         dataFunctions.sendQuestion(user);
@@ -104,80 +100,6 @@ bot.launch();
 
 dataFunctions.sendMaterial();
 
-const testsToBd = [
-    {
-        id: 1,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 2,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 3,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 4,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 5,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 6,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 7,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 8,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 9,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 10,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 11,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    },
-    {
-        id: 12,
-        wrongAnswers: [],
-        rightAnswers: [],
-        answers: []
-    }
-]
 // const restartAllUsers = async () => {
 //     for( let i = 0; i < users.users.length; i++) {
 //         const userId = users.users[i].id;
@@ -187,6 +109,8 @@ const testsToBd = [
 // }
 // await UserModel.updateMany({}, {$set: {tests: testsToBd}});
 // setTimeout(restartAllUsers, 5000);
+
+// await UserModel.updateMany({}, {$set: {receivedData: 1, completedTest: 1, score: 0}});
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

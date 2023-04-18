@@ -156,7 +156,11 @@ export const sendQuestion = async (user) => {
                 })
 
             if ((user.completedTest < config.sendedData) && user.receivedData < config.sendedData) {
-                await bot.telegram.sendMessage(userId, 'Через несколько секунд вы получите новое задание.');
+                const replyNewMessage = async () => {
+                    await bot.telegram.sendMessage(userId, 'Через несколько секунд вы получите новую тему.');
+                }
+
+                checkCompletedTestsUser(user.chatId, userId, replyNewMessage);
 
                 const lesson = lessons.lessons[user.completedTest];
 
