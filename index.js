@@ -26,6 +26,7 @@ mongoose
         await setConfig();
         setUsers().then(() => {
             console.log('users setted');
+            // dataFunctions.sendInfoForUsers();
         }).catch((err) => {
             console.log(err)
         })
