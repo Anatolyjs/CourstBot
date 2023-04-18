@@ -116,77 +116,7 @@ export const register = async (ctx) => {
     }
 };
 
-export const test = async (ctx) => {
-    const registeredUser = await dataFunctions.checkCompletedTestsUser(ctx);
-    if (!registeredUser) {
-        return;
-    }
 
-    const allTestsCompleted = async () => {
-        await ctx.reply('Вы выполнили все актуальные тесты');
-    }
-
-    if (registeredUser.completedTest >= registeredUser.receivedData) {
-        if (registeredUser.qurrentQuestionIndex !== 0) {
-            await UserModel.findOneAndUpdate({id: registeredUser.id}, {$set: {qurrentQuestionIndex: 0}});
-            setUsers();
-        }
-        checkingSendMessage(ctx, allTestsCompleted);
-        return; 
-    }
-
-    // if (registeredUser.messageToDelete.chatId && registeredUser.messageToDelete.messageId) {
-    //     try {
-    //         await bot.telegram.deleteMessage(registeredUser.messageToDelete.chatId, registeredUser.messageToDelete.messageId);
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // }
-    if (registeredUser.completedTest < registeredUser.receivedData) {
-        dataFunctions.sendQuestion(registeredUser);
-    } else {
-        checkingSendMessage(ctx, allTestsCompleted);
-    }
-};
-
-export const deleteAll = async (ctx) => {
-    try {
-        // users.users.forEach(user => {
-        //     const messagesLimit = user.firstMessage + 200;
-        //     const chatId = user.chatId;
-        //     for (let i = user.firstMessage; i < messagesLimit; i++) {
-        //         try {
-        //             bot.telegram.deleteMessage(chatId, i)
-        //         } catch (err) {
-        //             console.log('ops')
-        //         }
-        //     }
-        // });
-    } catch (err) {
-        console.log('opppps')
-    }
-};
-
-export const rating = async (ctx) => {
-    try {
-        if (ctx.message.from.id !== config.adminId) {
-            return;
-        }
-        const users = await UserModel.find();
-
-        const newArr = users.sort((a, b) => b.score - a.score);
-
-        const limit = newArr.length > 50 ? 50 : newArr.length;
-
-        let string = ``;
-        for (let i = 0; i < limit; i++) {
-            string += `${i + 1}. @${newArr[i].username} - ${newArr[i].score}\n`
-        }
-        await ctx.reply(string);
-    } catch (err) {
-        console.log('ops');
-    }
-};
 
 export const getUsersCount = async (ctx) => {
     try {
@@ -195,9 +125,8 @@ export const getUsersCount = async (ctx) => {
         }
 
         const users = await UserModel.find();
-        const usersCompletedTests = users.filter((user) => user.completedTest === config.sendedData);
 
-        await ctx.reply(`Всего зарегистрировалось пользователей: ${users.length}. Выполнили все текущие тесты: ${usersCompletedTests.length}`);
+        await ctx.reply(`Всего зарегистрировалось пользователей: ${users.length}.`);
     } catch (err) {
         console.log(err);
     }
