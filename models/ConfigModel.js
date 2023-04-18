@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const ConfigSchema = new mongoose.Schema({
     id: {
         type: Number,

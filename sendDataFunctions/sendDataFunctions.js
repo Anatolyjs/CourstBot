@@ -100,12 +100,13 @@ export const sendMaterial = async () => {
                     }
 
                     setTimeout(async () => {
+
                         for (let i = 0; i < users.users.length; i++) {
                             if (users.users[i].completedTest === users.users[i].receivedData) {
                                 console.log('sending data to', users.users[i].id)
                                 setTimeout(async () => {
                                     await sendData(users.users[i].id, lesson.image, lesson.text, lesson.preview, lesson.caption);
-                                    await UserModel.findOneAndUpdate({ id: users.users[i].id }, { $inc: { receivedData: 1 } }, { returnDocument: 'after' });
+                                    await UserModel.updateOne({ id: users.users[i].id }, { $inc: { receivedData: 1 } });
                                     setUsers();
 
                                 }, 100 * i);
@@ -144,11 +145,11 @@ export const sendQuestion = async (user) => {
 
             user.completedTest++;
 
-            await UserModel.findOneAndUpdate({
+            await UserModel.updateOne({
                 id: userId
             },
                 {
-                    $inc: { completedTest: 1 }
+                    $set: { completedTest: user.completedTest, tests: user.tests, score: user.score }
                 },
                 {
                     returnDocument: 'after'
@@ -175,16 +176,16 @@ export const sendQuestion = async (user) => {
                 }
             }
 
-            await UserModel.findOneAndUpdate(
-                { 
-                    id: userId 
-                },
-                {
-                    $set: { qurrentQuestionIndex: 0 }
-                },
-                {
-                    returnDocument: 'after'
-                });
+            // await UserModel.findOneAndUpdate(
+            //     { 
+            //         id: userId 
+            //     },
+            //     {
+            //         $set: { qurrentQuestionIndex: 0 }
+            //     },
+            //     {
+            //         returnDocument: 'after'
+            //     });
             setUsers();
             return;
         }
@@ -204,32 +205,13 @@ export const sendQuestion = async (user) => {
             await bot.telegram.sendMessage(userId, currentQuestion.question);
         }
 
-        let buttons = await bot.telegram.sendMessage(userId, 'Варианты ответов: ', Markup.inlineKeyboard(
+        await bot.telegram.sendMessage(userId, 'Варианты ответов: ', Markup.inlineKeyboard(
             [
                 ...answerOptions
             ]
         ))
 
-        user.messageToDelete.chatId = buttons.chat.id;
-        user.messageToDelete.messageId = buttons.message_id;
-
-        try {
-            const tempUser =  await UserModel.findOneAndUpdate({
-                id: userId
-            },
-            {
-                $set: { messageToDelete: { chatId: user.messageToDelete.chatId, messageId: user.messageToDelete.messageId } }
-            },
-            {
-                returnDocument: 'after'
-            });
-
-            console.log(`Messages for user ${userId} ${tempUser.messageToDelete.chatId}, ${tempUser.messageToDelete.messageId}`);
-
-        } catch (err) {
-            console.log('Не получилось обновить пользователя в базе данных');
-        }
-        setUsers();
+        // setUsers();
     } catch (err) {
         console.log(err);
     }

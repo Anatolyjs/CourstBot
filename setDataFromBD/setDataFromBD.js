@@ -9,7 +9,6 @@ export const setUsers = async () => {
         const usersData = await UserModel.find();
 
         users.users = [...usersData];
-
     } catch (err) {
         console.log(err)
     }

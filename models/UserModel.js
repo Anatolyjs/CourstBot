@@ -38,6 +38,10 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    answers: {
+        type: Array,
+        default: []
+    },
     tests: [
         {
             id: Number,
@@ -49,7 +53,10 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
+            answers: {
+                type: Array,
+                default: []
+            }           
         },
         {
             id: Number,
@@ -61,7 +68,10 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
+            answers: {
+                type: Array,
+                default: []
+            }           
         },
         {
             id: Number,
@@ -73,7 +83,10 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
+            answers: {
+                type: Array,
+                default: []
+            }           
         },
         {
             id: Number,
@@ -85,7 +98,10 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
+            answers: {
+                type: Array,
+                default: []
+            }           
         },
         {
             id: Number,
@@ -97,7 +113,10 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
+            answers: {
+                type: Array,
+                default: []
+            }           
         },
         {
             id: Number,
@@ -109,7 +128,10 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
+            answers: {
+                type: Array,
+                default: []
+            }           
         },
         {
             id: Number,
@@ -121,7 +143,10 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
+            answers: {
+                type: Array,
+                default: []
+            }           
         },
         {
             id: Number,
@@ -133,7 +158,10 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
+            answers: {
+                type: Array,
+                default: []
+            }           
         },
         {
             id: Number,
@@ -145,8 +173,56 @@ const UserSchema = new mongoose.Schema({
                 type: Array, 
                 default: []
             },
-
-        }
+            answers: {
+                type: Array,
+                default: []
+            }           
+        },
+        {
+            id: Number,
+            rightAnswers: {
+                type: Array, 
+                default: []
+            },
+            wrongAnswers: {
+                type: Array, 
+                default: []
+            },
+            answers: {
+                type: Array,
+                default: []
+            }           
+        },
+        {
+            id: Number,
+            rightAnswers: {
+                type: Array, 
+                default: []
+            },
+            wrongAnswers: {
+                type: Array, 
+                default: []
+            },
+            answers: {
+                type: Array,
+                default: []
+            }           
+        },
+        {
+            id: Number,
+            rightAnswers: {
+                type: Array, 
+                default: []
+            },
+            wrongAnswers: {
+                type: Array, 
+                default: []
+            },
+            answers: {
+                type: Array,
+                default: []
+            }           
+        },
     ]
 });
 

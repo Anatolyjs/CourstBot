@@ -135,13 +135,13 @@ export const test = async (ctx) => {
         return; 
     }
 
-    if (registeredUser.messageToDelete.chatId && registeredUser.messageToDelete.messageId) {
-        try {
-            await bot.telegram.deleteMessage(registeredUser.messageToDelete.chatId, registeredUser.messageToDelete.messageId);
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    // if (registeredUser.messageToDelete.chatId && registeredUser.messageToDelete.messageId) {
+    //     try {
+    //         await bot.telegram.deleteMessage(registeredUser.messageToDelete.chatId, registeredUser.messageToDelete.messageId);
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // }
     if (registeredUser.completedTest < registeredUser.receivedData) {
         dataFunctions.sendQuestion(registeredUser);
     } else {
