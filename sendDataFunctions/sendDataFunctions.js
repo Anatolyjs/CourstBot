@@ -23,12 +23,14 @@ const sendData = async (to, photo, info, preview, caption) => {
     if (photo) {
         try {
             await bot.telegram.sendPhoto(to, { source: photo }, {
-                caption: caption,
-                parse_mode: 'HTML'
+                caption: info,
+                parse_mode: 'HTML',
+                disable_web_page_preview: preview
             });
         } catch (err) {
             console.log('Не получилось отправить фото');
         }
+        return;
     }
     if (info) {
         try {
