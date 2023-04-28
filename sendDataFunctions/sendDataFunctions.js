@@ -21,6 +21,23 @@ export const checkingSendMessage = async (chatId, userId, callback) => {
 
 const sendData = async (to, photo, info, preview, caption) => {
     if (photo) {
+        if (typeof(photo) === 'object') {
+            try {
+                const mediaGroup = photo.map((el) => { 
+                    return {type: 'photo', media: { source: el }};
+                });
+
+                await bot.telegram.sendMediaGroup(to, mediaGroup);
+                bot.telegram.sendMessage(to, info, { parse_mode: 'HTML', disable_web_page_preview: preview }).then(async (res) => {
+                    await UserModel.updateOne({ id: to }, { $inc: { receivedData: 1 }});
+                }).catch((err) => {
+                    console.log('Информация не отправилась и пользователь в бд не обновился', err);
+                });
+            } catch (err) {
+                console.log('Не получилось отправить фото и текст', err);
+            }
+            return;
+        }
         try {
             await bot.telegram.sendPhoto(to, { source: photo }, {
                 caption: info,
@@ -76,7 +93,7 @@ export const sendMaterial = async () => {
                                 } catch (err) {
                                     console.log(err);
                                 }
-                            }, 200 * i);
+                            }, 300 * i);
                         }
                     }, fixedDate - currentDate);
                 })
