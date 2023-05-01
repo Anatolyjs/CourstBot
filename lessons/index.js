@@ -184,7 +184,7 @@ export default {
                     image: ['./lessons/images/photo.jpg'],
                     preview: true,
                     caption: null,
-                    time: 'May 01, 2023 13:45:00'
+                    time: 'May 01, 2023 17:00:00'
                 }
             ]
         },
