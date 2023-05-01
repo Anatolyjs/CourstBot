@@ -23,11 +23,15 @@ const sendData = async (to, photo, info, preview, caption) => {
     if (photo) {
         if (typeof(photo) === 'object') {
             try {
-                const mediaGroup = photo.map((el) => { 
-                    return {type: 'photo', media: { source: el }};
-                });
-
-                await bot.telegram.sendMediaGroup(to, mediaGroup);
+                if (photo.length === 1) {
+                    await bot.telegram.sendPhoto(to, {source: photo[0]});
+                } else {
+                    const mediaGroup = photo.map((el) => { 
+                        return {type: 'photo', media: { source: el }};
+                    });
+    
+                    await bot.telegram.sendMediaGroup(to, mediaGroup);
+                }
                 bot.telegram.sendMessage(to, info, { parse_mode: 'HTML', disable_web_page_preview: preview }).then(async (res) => {
                     await UserModel.updateOne({ id: to }, { $inc: { receivedData: 1 }});
                 }).catch((err) => {
